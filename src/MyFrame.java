@@ -966,7 +966,6 @@ public class MyFrame extends javax.swing.JFrame {
                 double avgR = zR/9;
                 double avgG = zG/9;
                 double avgB = zB/9;
-                //System.out.println(avgR+" "+avgG+" "+avgB);
                 resImg.setRGB(i, j, new Color((int)avgR,(int)avgG,(int)avgB).getRGB());
             }
         }

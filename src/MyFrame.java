@@ -946,27 +946,31 @@ public class MyFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         int x = img.getWidth();
         int y = img.getHeight();
-        double avgR;
-        double avgG;
-        double avgB;
-        //BufferedImage BfImg = new BufferedImage(x, y, img.getType());
         Color color;
-        int rR, rG, rB;
-        for (int i = 0; i < x; i+=3) {
-            for (int j = 0; j < y; j+=3) {
+        double[][] mask={{1,1,1},{1,1,1},{1,1,1}};
+        BufferedImage resImg=new BufferedImage(x,y,img.getType());
+        for (int i = 1; i < x-1; i++) {
+            for (int j = 1; j < y-1; j++) {
+                double zR=0;
+                double zG=0;
+                double zB=0;
                 //mask 3*3
-                for (int k = 0; k < 3; k++) {
-                    for (int l = 0; l < 3; l++) {
-                        color = new Color(img.getRGB(k, l));
-                        avgR=color.getRed()/9;
-                        avgG=color.getGreen()/9;
-                        avgB=color.getBlue()/9;
-                        img.setRGB(k,l, new Color((int)avgR,(int)avgG,(int)avgB).getRGB());
+                for (int k = -1; k < 2; k++) {
+                    for (int l = -1; l < 2; l++) {
+                        color=new Color(img.getRGB(i+k, j+l));
+                        zR=zR+(color.getRed()*mask[k+1][l+1]);
+                        zG=zG+(color.getGreen()*mask[k+1][l+1]);
+                        zB=zB+(color.getBlue()*mask[k+1][l+1]);
                     }
                 }
+                double avgR = zR/9;
+                double avgG = zG/9;
+                double avgB = zB/9;
+                //System.out.println(avgR+" "+avgG+" "+avgB);
+                resImg.setRGB(i, j, new Color((int)avgR,(int)avgG,(int)avgB).getRGB());
             }
         }
-        //img = BfImg;
+        img=resImg;
         jLblImage.setIcon(new ImageIcon(img));
         jLblHistogram.setIcon(new ImageIcon(NHistogram(img)));
     }//GEN-LAST:event_jSMI_AverageSFActionPerformed

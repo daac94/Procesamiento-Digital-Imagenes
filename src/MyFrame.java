@@ -10,6 +10,7 @@ import java.lang.Math.*;
 import static java.lang.Math.cos;
 import static java.lang.Math.pow;
 import static java.lang.Math.tanh;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -124,7 +125,47 @@ public class MyFrame extends javax.swing.JFrame {
         }
         return res;
     }
-
+    /**
+     * This is a spacial filter to apply to an image, the mask or kernel of this ffilter
+     * will calculate the average of the pixels in the mask and 
+     * @param maskSize
+     * @return 
+     */
+    private BufferedImage AverageSpatialFilter(int maskSize){
+        int x = img.getWidth();
+        int y = img.getHeight();
+        Color color;
+        int mValue=1;
+        double[][] mask=new double[maskSize][maskSize];
+        for (int i = 0; i < mask.length; i++) {
+            for (int j = 0; j < mask.length; j++) {
+                mask[i][j]=mValue;
+            }
+        }
+        BufferedImage resImg=new BufferedImage((x-(mask.length-2))+1,(y-(mask.length-2))+1,img.getType());
+        for (int i = 1; i < (x-(mask.length-2)); i++) {
+            for (int j = 1; j < (y-(mask.length-2)); j++) {
+                double zR=0;
+                double zG=0;
+                double zB=0;
+                //mask 3*3
+                for (int k = -1; k < mask.length-1; k++) {
+                    for (int l = -1; l < mask.length-1; l++) {
+                        color=new Color(img.getRGB(i+k, j+l));
+                        zR=zR+(color.getRed()*mask[k+1][l+1]);
+                        zG=zG+(color.getGreen()*mask[k+1][l+1]);
+                        zB=zB+(color.getBlue()*mask[k+1][l+1]);
+                    }
+                }
+                double avgR = zR/(mask.length*mask.length);
+                double avgG = zG/(mask.length*mask.length);
+                double avgB = zB/(mask.length*mask.length);
+                resImg.setRGB(i, j, new Color((int)avgR,(int)avgG,(int)avgB).getRGB());
+            }
+        }
+        img=resImg;
+        return img;
+    }
     /**
      * creates the histogram of the image that is recived in the @parameters of
      * the method
@@ -269,7 +310,10 @@ public class MyFrame extends javax.swing.JFrame {
         jMITanhFilter = new javax.swing.JMenuItem();
         jMI_HistogramEqualization = new javax.swing.JMenuItem();
         jSM_SpaceFilters = new javax.swing.JMenu();
-        jSMI_AverageSF = new javax.swing.JMenuItem();
+        jSM_AvgSF = new javax.swing.JMenu();
+        jSMI_AFAverage3x3 = new javax.swing.JMenuItem();
+        jSMI_AFAverage15x15 = new javax.swing.JMenuItem();
+        jSMI_AFAverage32x32 = new javax.swing.JMenuItem();
         jSMI_MediumSF = new javax.swing.JMenuItem();
         jSM_BorderDetectionFilters = new javax.swing.JMenu();
         jMI_BDetectionX = new javax.swing.JMenuItem();
@@ -281,6 +325,7 @@ public class MyFrame extends javax.swing.JFrame {
         jSMISO_Substract = new javax.swing.JMenuItem();
         jSMISO_Mult = new javax.swing.JMenuItem();
         jSMISO_Division = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -473,15 +518,40 @@ public class MyFrame extends javax.swing.JFrame {
 
         jSM_SpaceFilters.setText("Space Filters");
 
-        jSMI_AverageSF.setText("Average");
-        jSMI_AverageSF.addActionListener(new java.awt.event.ActionListener() {
+        jSM_AvgSF.setText("Average");
+
+        jSMI_AFAverage3x3.setText("3 x 3");
+        jSMI_AFAverage3x3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jSMI_AverageSFActionPerformed(evt);
+                jSMI_AFAverage3x3ActionPerformed(evt);
             }
         });
-        jSM_SpaceFilters.add(jSMI_AverageSF);
+        jSM_AvgSF.add(jSMI_AFAverage3x3);
+
+        jSMI_AFAverage15x15.setText("15 x 15");
+        jSMI_AFAverage15x15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSMI_AFAverage15x15ActionPerformed(evt);
+            }
+        });
+        jSM_AvgSF.add(jSMI_AFAverage15x15);
+
+        jSMI_AFAverage32x32.setText("32 x 32");
+        jSMI_AFAverage32x32.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSMI_AFAverage32x32ActionPerformed(evt);
+            }
+        });
+        jSM_AvgSF.add(jSMI_AFAverage32x32);
+
+        jSM_SpaceFilters.add(jSM_AvgSF);
 
         jSMI_MediumSF.setText("Medium");
+        jSMI_MediumSF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSMI_MediumSFActionPerformed(evt);
+            }
+        });
         jSM_SpaceFilters.add(jSMI_MediumSF);
 
         jSM_BorderDetectionFilters.setText("Border detection");
@@ -522,6 +592,9 @@ public class MyFrame extends javax.swing.JFrame {
         jSM_SpaceFilters.add(jSM_SobelOps);
 
         jMenu_SpacialFilters.add(jSM_SpaceFilters);
+
+        jMenu1.setText("Elementary Ops");
+        jMenu_SpacialFilters.add(jMenu1);
 
         jMenuBar1.add(jMenu_SpacialFilters);
 
@@ -942,7 +1015,13 @@ public class MyFrame extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jMI_BDetectionXActionPerformed
 
-    private void jSMI_AverageSFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMI_AverageSFActionPerformed
+    private void jSMI_AFAverage3x3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMI_AFAverage3x3ActionPerformed
+        // TODO add your handling code here:
+        jLblImage.setIcon(new ImageIcon(AverageSpatialFilter(3)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(img)));
+    }//GEN-LAST:event_jSMI_AFAverage3x3ActionPerformed
+
+    private void jSMI_MediumSFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMI_MediumSFActionPerformed
         // TODO add your handling code here:
         int x = img.getWidth();
         int y = img.getHeight();
@@ -951,28 +1030,42 @@ public class MyFrame extends javax.swing.JFrame {
         BufferedImage resImg=new BufferedImage(x,y,img.getType());
         for (int i = 1; i < x-1; i++) {
             for (int j = 1; j < y-1; j++) {
-                double zR=0;
-                double zG=0;
-                double zB=0;
+                double vR[]=new double[9];
+                double vG[]=new double[9];
+                double vB[]=new double[9];
                 //mask 3*3
+                int m=0;
                 for (int k = -1; k < 2; k++) {
                     for (int l = -1; l < 2; l++) {
                         color=new Color(img.getRGB(i+k, j+l));
-                        zR=zR+(color.getRed()*mask[k+1][l+1]);
-                        zG=zG+(color.getGreen()*mask[k+1][l+1]);
-                        zB=zB+(color.getBlue()*mask[k+1][l+1]);
+                        vR[m]=color.getRed();
+                        vG[m]=color.getGreen();
+                        vB[m]=color.getBlue();
+                        m++;
                     }
                 }
-                double avgR = zR/9;
-                double avgG = zG/9;
-                double avgB = zB/9;
-                resImg.setRGB(i, j, new Color((int)avgR,(int)avgG,(int)avgB).getRGB());
+                Arrays.sort(vR);
+                Arrays.sort(vG);
+                Arrays.sort(vB);
+                resImg.setRGB(i, j, new Color((int)vR[4],(int)vG[4],(int)vB[4]).getRGB());
             }
         }
         img=resImg;
         jLblImage.setIcon(new ImageIcon(img));
         jLblHistogram.setIcon(new ImageIcon(NHistogram(img)));
-    }//GEN-LAST:event_jSMI_AverageSFActionPerformed
+    }//GEN-LAST:event_jSMI_MediumSFActionPerformed
+
+    private void jSMI_AFAverage15x15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMI_AFAverage15x15ActionPerformed
+        // TODO add your handling code here:
+        jLblImage.setIcon(new ImageIcon(AverageSpatialFilter(15)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(AverageSpatialFilter(15))));
+    }//GEN-LAST:event_jSMI_AFAverage15x15ActionPerformed
+
+    private void jSMI_AFAverage32x32ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMI_AFAverage32x32ActionPerformed
+        // TODO add your handling code here:
+        jLblImage.setIcon(new ImageIcon(AverageSpatialFilter(32)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(AverageSpatialFilter(32))));
+    }//GEN-LAST:event_jSMI_AFAverage32x32ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1033,6 +1126,7 @@ public class MyFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMI_Negative;
     private javax.swing.JMenuItem jMI_ZEasy;
     private javax.swing.JMenuItem jMI_ZoutEasy;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuIR_X;
     private javax.swing.JMenuItem jMenuOpen;
@@ -1043,8 +1137,11 @@ public class MyFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jSMISO_Mult;
     private javax.swing.JMenuItem jSMISO_Substract;
     private javax.swing.JMenuItem jSMISO_Sum;
-    private javax.swing.JMenuItem jSMI_AverageSF;
+    private javax.swing.JMenuItem jSMI_AFAverage15x15;
+    private javax.swing.JMenuItem jSMI_AFAverage32x32;
+    private javax.swing.JMenuItem jSMI_AFAverage3x3;
     private javax.swing.JMenuItem jSMI_MediumSF;
+    private javax.swing.JMenu jSM_AvgSF;
     private javax.swing.JMenu jSM_BorderDetectionFilters;
     private javax.swing.JMenu jSM_Grayscale;
     private javax.swing.JMenu jSM_PointFilters;

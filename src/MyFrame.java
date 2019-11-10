@@ -166,6 +166,36 @@ public class MyFrame extends javax.swing.JFrame {
         img=resImg;
         return img;
     }
+    private BufferedImage BorderDetectionFilter(double[][] mask){
+        Color color;
+        int x = img.getWidth();
+        int y = img.getHeight();
+        BufferedImage resImg = new BufferedImage(x, y, img.getType());
+        for (int i = 1; i < x - 1; i++) {
+            for (int j = 1; j < y - 1; j++) {
+                double zR = 0;
+                double zG = 0;
+                double zB = 0;
+                //mask 3*3
+                for (int k = -1; k < 2; k++) {
+                    for (int l = -1; l < 2; l++) {
+                        color = new Color(img.getRGB(i + k, j + l));
+                        zR =zR + (color.getRed() * mask[k + 1][l + 1]);
+                        zG =zG + (color.getGreen() * mask[k + 1][l + 1]);
+                        zB =zB + (color.getBlue() * mask[k + 1][l + 1]);
+                    }
+                }
+                zR=(zR<0)?0:zR;
+                zG=(zG<0)?0:zG;
+                zB=(zB<0)?0:zB;
+                zR=(zR<256)?zR:255;
+                zG=(zG<256)?zG:255;
+                zB=(zB<256)?zB:255;
+                resImg.setRGB(i, j, new Color((int) zR, (int) zG, (int) zB).getRGB());
+            }
+        }
+        return resImg;
+    }
     /**
      * creates the histogram of the image that is recived in the @parameters of
      * the method
@@ -565,12 +595,27 @@ public class MyFrame extends javax.swing.JFrame {
         jSM_BorderDetectionFilters.add(jMI_BDetectionX);
 
         jMI_BDetectionY.setText("Y");
+        jMI_BDetectionY.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMI_BDetectionYActionPerformed(evt);
+            }
+        });
         jSM_BorderDetectionFilters.add(jMI_BDetectionY);
 
         jMI_BDetectionXY.setText("X,Y");
+        jMI_BDetectionXY.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMI_BDetectionXYActionPerformed(evt);
+            }
+        });
         jSM_BorderDetectionFilters.add(jMI_BDetectionXY);
 
         jMI_BDetectionAll.setText("All directions");
+        jMI_BDetectionAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMI_BDetectionAllActionPerformed(evt);
+            }
+        });
         jSM_BorderDetectionFilters.add(jMI_BDetectionAll);
 
         jSM_SpaceFilters.add(jSM_BorderDetectionFilters);
@@ -1012,7 +1057,13 @@ public class MyFrame extends javax.swing.JFrame {
 
     private void jMI_BDetectionXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMI_BDetectionXActionPerformed
         // TODO add your handling code here:
-        
+        double[][] mask = {
+            {0, 0, 0},
+            {-1, 2, -1},
+            {0, 0, 0}
+        };
+        jLblImage.setIcon(new ImageIcon(BorderDetectionFilter(mask)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(BorderDetectionFilter(mask))));
     }//GEN-LAST:event_jMI_BDetectionXActionPerformed
 
     private void jSMI_AFAverage3x3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMI_AFAverage3x3ActionPerformed
@@ -1066,6 +1117,39 @@ public class MyFrame extends javax.swing.JFrame {
         jLblImage.setIcon(new ImageIcon(AverageSpatialFilter(32)));
         jLblHistogram.setIcon(new ImageIcon(NHistogram(AverageSpatialFilter(32))));
     }//GEN-LAST:event_jSMI_AFAverage32x32ActionPerformed
+
+    private void jMI_BDetectionYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMI_BDetectionYActionPerformed
+        // TODO add your handling code here:
+        double[][] mask = {
+            {0, 1, 0},
+            {0, -2, 0},
+            {0, 1, 0}
+        };
+        jLblImage.setIcon(new ImageIcon(BorderDetectionFilter(mask)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(BorderDetectionFilter(mask))));
+    }//GEN-LAST:event_jMI_BDetectionYActionPerformed
+
+    private void jMI_BDetectionXYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMI_BDetectionXYActionPerformed
+        // TODO add your handling code here:
+        double[][] mask = {
+            {0, -1, 0},
+            {-1, 4, -1},
+            {0, -1, 0}
+        };
+        jLblImage.setIcon(new ImageIcon(BorderDetectionFilter(mask)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(BorderDetectionFilter(mask))));
+    }//GEN-LAST:event_jMI_BDetectionXYActionPerformed
+
+    private void jMI_BDetectionAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMI_BDetectionAllActionPerformed
+        // TODO add your handling code here:
+        double[][] mask = {
+            {-1,-1,-1},
+            {-1,8,-1},
+            {-1,-1,-1},
+        };
+        jLblImage.setIcon(new ImageIcon(BorderDetectionFilter(mask)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(BorderDetectionFilter(mask))));
+    }//GEN-LAST:event_jMI_BDetectionAllActionPerformed
 
     /**
      * @param args the command line arguments

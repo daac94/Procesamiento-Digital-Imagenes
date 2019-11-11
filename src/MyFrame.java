@@ -14,6 +14,7 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import sun.jvm.hotspot.oops.java_lang_Class;
 
 //...
@@ -355,7 +356,9 @@ public class MyFrame extends javax.swing.JFrame {
         jSMISO_Substract = new javax.swing.JMenuItem();
         jSMISO_Mult = new javax.swing.JMenuItem();
         jSMISO_Division = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
+        jMI_SumImg = new javax.swing.JMenu();
+        jMI_AddImg = new javax.swing.JMenuItem();
+        jMI_SubstractImg = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -623,23 +626,60 @@ public class MyFrame extends javax.swing.JFrame {
         jSM_SobelOps.setText("Sobel Ops");
 
         jSMISO_Sum.setText("Sum");
+        jSMISO_Sum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSMISO_SumActionPerformed(evt);
+            }
+        });
         jSM_SobelOps.add(jSMISO_Sum);
 
         jSMISO_Substract.setText("Substract");
+        jSMISO_Substract.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSMISO_SubstractActionPerformed(evt);
+            }
+        });
         jSM_SobelOps.add(jSMISO_Substract);
 
         jSMISO_Mult.setText("Multiplication");
+        jSMISO_Mult.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSMISO_MultActionPerformed(evt);
+            }
+        });
         jSM_SobelOps.add(jSMISO_Mult);
 
         jSMISO_Division.setText("Division");
+        jSMISO_Division.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSMISO_DivisionActionPerformed(evt);
+            }
+        });
         jSM_SobelOps.add(jSMISO_Division);
 
         jSM_SpaceFilters.add(jSM_SobelOps);
 
         jMenu_SpacialFilters.add(jSM_SpaceFilters);
 
-        jMenu1.setText("Elementary Ops");
-        jMenu_SpacialFilters.add(jMenu1);
+        jMI_SumImg.setText("Elementary Ops");
+
+        jMI_AddImg.setText("+ Image");
+        jMI_AddImg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMI_AddImgActionPerformed(evt);
+            }
+        });
+        jMI_SumImg.add(jMI_AddImg);
+
+        jMI_SubstractImg.setText("- Image");
+        jMI_SubstractImg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMI_SubstractImgActionPerformed(evt);
+            }
+        });
+        jMI_SumImg.add(jMI_SubstractImg);
+
+        jMenu_SpacialFilters.add(jMI_SumImg);
 
         jMenuBar1.add(jMenu_SpacialFilters);
 
@@ -1151,6 +1191,276 @@ public class MyFrame extends javax.swing.JFrame {
         jLblHistogram.setIcon(new ImageIcon(NHistogram(BorderDetectionFilter(mask))));
     }//GEN-LAST:event_jMI_BDetectionAllActionPerformed
 
+    private void jSMISO_SumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMISO_SumActionPerformed
+        // TODO add your handling code here:
+        double[][] m1={
+            {-1,-2,-1},
+            {0,0,0},
+            {1,2,1},
+        };
+        double m2[][]={
+            {-1,0,1},
+            {-2,0,2},
+            {-1,0,1},
+        };
+        Color color;
+        int x = img.getWidth();
+        int y = img.getHeight();
+        BufferedImage resImg = new BufferedImage(x, y, img.getType());
+        for (int i = 1; i < x - 1; i++) {
+            for (int j = 1; j < y - 1; j++) {
+                double zR = 0;
+                double zG = 0;
+                double zB = 0;
+                //mask 3*3
+                for (int k = -1; k < 2; k++) {
+                    for (int l = -1; l < 2; l++) {
+                        color = new Color(img.getRGB(i + k, j + l));
+                        zR =zR + ((color.getRed() * m1[k + 1][l + 1])+(color.getRed() * m2[k + 1][l + 1]));
+                        zG =zG + ((color.getGreen() * m1[k + 1][l + 1])+(color.getGreen() * m2[k + 1][l + 1]));
+                        zB =zB + ((color.getBlue() * m1[k + 1][l + 1])+(color.getBlue() * m2[k + 1][l + 1]));
+                    }
+                }
+                zR=(zR<0)?0:zR;
+                zG=(zG<0)?0:zG;
+                zB=(zB<0)?0:zB;
+                zR=(zR<256)?zR:255;
+                zG=(zG<256)?zG:255;
+                zB=(zB<256)?zB:255;
+                resImg.setRGB(i, j, new Color((int) zR, (int) zG, (int) zB).getRGB());
+            }
+        }
+        jLblImage.setIcon(new ImageIcon(BorderDetectionFilter(m1)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(BorderDetectionFilter(m1))));
+    }//GEN-LAST:event_jSMISO_SumActionPerformed
+
+    private void jSMISO_SubstractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMISO_SubstractActionPerformed
+        // TODO add your handling code here:
+        double[][] m1={
+            {-1,-2,-1},
+            {0,0,0},
+            {1,2,1},
+        };
+        double m2[][]={
+            {-1,0,1},
+            {-2,0,2},
+            {-1,0,1},
+        };
+        Color color;
+        int x = img.getWidth();
+        int y = img.getHeight();
+        BufferedImage resImg = new BufferedImage(x, y, img.getType());
+        for (int i = 1; i < x - 1; i++) {
+            for (int j = 1; j < y - 1; j++) {
+                double zR = 0;
+                double zG = 0;
+                double zB = 0;
+                //mask 3*3
+                for (int k = -1; k < 2; k++) {
+                    for (int l = -1; l < 2; l++) {
+                        color = new Color(img.getRGB(i + k, j + l));
+                        zR+= ((color.getRed() * m1[k + 1][l + 1])-(color.getRed() * m2[k + 1][l + 1]));
+                        zG+= ((color.getGreen() * m1[k + 1][l + 1])-(color.getGreen() * m2[k + 1][l + 1]));
+                        zB+= ((color.getBlue() * m1[k + 1][l + 1])-(color.getBlue() * m2[k + 1][l + 1]));
+                    }
+                }
+                zR=(zR<0)?0:zR;
+                zG=(zG<0)?0:zG;
+                zB=(zB<0)?0:zB;
+                zR=(zR<256)?zR:255;
+                zG=(zG<256)?zG:255;
+                zB=(zB<256)?zB:255;
+                resImg.setRGB(i, j, new Color((int) zR, (int) zG, (int) zB).getRGB());
+            }
+        }
+        jLblImage.setIcon(new ImageIcon(BorderDetectionFilter(m1)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(BorderDetectionFilter(m1))));
+    }//GEN-LAST:event_jSMISO_SubstractActionPerformed
+
+    private void jSMISO_MultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMISO_MultActionPerformed
+        // TODO add your handling code here:
+        double[][] m1={
+            {-1,-2,-1},
+            {0,0,0},
+            {1,2,1},
+        };
+        double m2[][]={
+            {-1,0,1},
+            {-2,0,2},
+            {-1,0,1},
+        };
+        Color color;
+        int x = img.getWidth();
+        int y = img.getHeight();
+        BufferedImage resImg = new BufferedImage(x, y, img.getType());
+        for (int i = 1; i < x - 1; i++) {
+            for (int j = 1; j < y - 1; j++) {
+                double zR = 0;
+                double zG = 0;
+                double zB = 0;
+                //mask 3*3
+                for (int k = -1; k < 2; k++) {
+                    for (int l = -1; l < 2; l++) {
+                        color = new Color(img.getRGB(i + k, j + l));
+                        zR =zR + ((color.getRed() * m1[k + 1][l + 1])*(color.getRed() * m2[k + 1][l + 1]));
+                        zG =zG + ((color.getGreen() * m1[k + 1][l + 1])*(color.getGreen() * m2[k + 1][l + 1]));
+                        zB =zB + ((color.getBlue() * m1[k + 1][l + 1])*(color.getBlue() * m2[k + 1][l + 1]));
+                    }
+                }
+                zR=(zR<0)?0:zR;
+                zG=(zG<0)?0:zG;
+                zB=(zB<0)?0:zB;
+                zR=(zR<256)?zR:255;
+                zG=(zG<256)?zG:255;
+                zB=(zB<256)?zB:255;
+                resImg.setRGB(i, j, new Color((int) zR, (int) zG, (int) zB).getRGB());
+            }
+        }
+        jLblImage.setIcon(new ImageIcon(BorderDetectionFilter(m1)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(BorderDetectionFilter(m1))));
+    }//GEN-LAST:event_jSMISO_MultActionPerformed
+
+    private void jSMISO_DivisionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSMISO_DivisionActionPerformed
+        // TODO add your handling code here:
+        double[][] m1={
+            {-1,-2,-1},
+            {0,0,0},
+            {1,2,1},
+        };
+        double m2[][]={
+            {-1,0,1},
+            {-2,0,2},
+            {-1,0,1},
+        };
+        Color color;
+        int x = img.getWidth();
+        int y = img.getHeight();
+        BufferedImage resImg = new BufferedImage(x, y, img.getType());
+        for (int i = 1; i < x - 1; i++) {
+            for (int j = 1; j < y - 1; j++) {
+                double zR = 0;
+                double zG = 0;
+                double zB = 0;
+                //mask 3*3
+                for (int k = -1; k < 2; k++) {
+                    for (int l = -1; l < 2; l++) {
+                        color = new Color(img.getRGB(i + k, j + l));
+                        zR =zR + ((color.getRed() * m1[k + 1][l + 1])/(color.getRed() * m2[k + 1][l + 1]));
+                        zG =zG + ((color.getGreen() * m1[k + 1][l + 1])/(color.getGreen() * m2[k + 1][l + 1]));
+                        zB =zB + ((color.getBlue() * m1[k + 1][l + 1])/(color.getBlue() * m2[k + 1][l + 1]));
+                    }
+                }
+                zR=(zR<0)?0:zR;
+                zG=(zG<0)?0:zG;
+                zB=(zB<0)?0:zB;
+                zR=(zR<256)?zR:255;
+                zG=(zG<256)?zG:255;
+                zB=(zB<256)?zB:255;
+                resImg.setRGB(i, j, new Color((int) zR, (int) zG, (int) zB).getRGB());
+            }
+        }
+        jLblImage.setIcon(new ImageIcon(BorderDetectionFilter(m1)));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(BorderDetectionFilter(m1))));
+    }//GEN-LAST:event_jSMISO_DivisionActionPerformed
+
+    private void jMI_SubstractImgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMI_SubstractImgActionPerformed
+        // TODO add your handling code here:
+        Open2Images();
+        int x=img.getWidth();
+        int y=img.getHeight();
+        int x2=SecondImg.getWidth();
+        int y2=SecondImg.getHeight();
+        if ((x==x2)&&(y==y2)) {
+            int r;
+            int g;
+            int b;
+            Color c;
+            Color c2;
+            BufferedImage resImg = new BufferedImage(x, y, img.getType());
+            for (int i = 0; i < x; i++) {
+                for (int j = 0; j < y; j++) {
+                    c = new Color(img.getRGB(i, j));
+                    c2 = new Color(SecondImg.getRGB(i, j));
+                    r = (c.getRed() < c2.getRed()) ? c2.getRed() : c.getRed();
+                    g = (c.getGreen() < c2.getGreen()) ? c2.getGreen() : c.getGreen();
+                    b = (c.getBlue() < c2.getBlue()) ? c2.getBlue() : c.getBlue();
+                    resImg.setRGB(i, j, new Color(r, g, b).getRGB());
+                }
+            }
+            jLblImage.setIcon(new ImageIcon(resImg));
+            jLblHistogram.setIcon(new ImageIcon(NHistogram(resImg)));
+            JOptionPane.showMessageDialog(this, "Done a-b");
+        }else{
+        JOptionPane.showMessageDialog(this, "both images must be from the same size");
+        }
+    }//GEN-LAST:event_jMI_SubstractImgActionPerformed
+
+    private void jMI_AddImgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMI_AddImgActionPerformed
+        // TODO add your handling code here:
+        Open2Images();
+        int x=img.getWidth();
+        int y=img.getHeight();
+        int x2=SecondImg.getWidth();
+        int y2=SecondImg.getHeight();
+        if ((x>=x2)&&(y>=y2)) {
+            int r;
+            int g;
+            int b;
+            Color c;
+            Color c2;
+            BufferedImage resImg = new BufferedImage(x, y, img.getType());
+            for (int i = 0; i < x; i++) {
+                for (int j = 0; j < y; j++) {
+                    c = new Color(img.getRGB(i, j));
+                    c2 = new Color(SecondImg.getRGB(i, j));
+                    r = (c.getRed() < c2.getRed()) ? c.getRed() : c2.getRed();
+                    g = (c.getGreen() < c2.getGreen()) ? c.getGreen() : c2.getGreen();
+                    b = (c.getBlue() < c2.getBlue()) ? c.getBlue() : c2.getBlue();
+                    resImg.setRGB(i, j, new Color(r, g, b).getRGB());
+                }
+            }
+            jLblImage.setIcon(new ImageIcon(resImg));
+            jLblHistogram.setIcon(new ImageIcon(NHistogram(resImg)));
+            JOptionPane.showMessageDialog(this, "Done a+b");
+        }else{
+        JOptionPane.showMessageDialog(this, "both images must be from the same size");
+        }
+    }//GEN-LAST:event_jMI_AddImgActionPerformed
+    public void Open2Images(){
+        JFileChooser fc;
+        JOptionPane.showMessageDialog(this, "Select the first image");
+        fc = new JFileChooser("C:/Users/icema/Documents/NetBeansProjects/PDI/src"/*"C:/Users/icema/Documents/MEGA/wpp/"*/);
+        int returnVal = fc.showOpenDialog(fc);
+        String filepath = null;
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            filepath = fc.getSelectedFile().getAbsolutePath();
+        }
+        try {
+            img = ImageIO.read(new File(filepath));
+
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        jLblImage.setIcon(new ImageIcon(img));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(img)));
+        // second image
+        JOptionPane.showMessageDialog(this, "Select the second image");
+        fc = new JFileChooser("C:/Users/icema/Documents/NetBeansProjects/PDI/src"/*"C:/Users/icema/Documents/MEGA/wpp/"*/);
+        int returnValb = fc.showOpenDialog(fc);
+        String filepathb = null;
+        if (returnValb == JFileChooser.APPROVE_OPTION) {
+            filepathb = fc.getSelectedFile().getAbsolutePath();
+        }
+        try {
+            SecondImg = ImageIO.read(new File(filepathb));
+
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        //img=SecondImg;
+        jLblImage.setIcon(new ImageIcon(SecondImg));
+        jLblHistogram.setIcon(new ImageIcon(NHistogram(SecondImg)));
+    }
     /**
      * @param args the command line arguments
      */
@@ -1186,6 +1496,7 @@ public class MyFrame extends javax.swing.JFrame {
         });
     }
     private BufferedImage img;
+    private BufferedImage SecondImg;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLblHistogram;
     private javax.swing.JLabel jLblImage;
@@ -1201,6 +1512,7 @@ public class MyFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMITanhFilter;
     private javax.swing.JMenuItem jMI_90Ccw;
     private javax.swing.JMenuItem jMI_90Cw;
+    private javax.swing.JMenuItem jMI_AddImg;
     private javax.swing.JMenuItem jMI_BDetectionAll;
     private javax.swing.JMenuItem jMI_BDetectionX;
     private javax.swing.JMenuItem jMI_BDetectionXY;
@@ -1208,9 +1520,10 @@ public class MyFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMI_GrayScale;
     private javax.swing.JMenuItem jMI_HistogramEqualization;
     private javax.swing.JMenuItem jMI_Negative;
+    private javax.swing.JMenuItem jMI_SubstractImg;
+    private javax.swing.JMenu jMI_SumImg;
     private javax.swing.JMenuItem jMI_ZEasy;
     private javax.swing.JMenuItem jMI_ZoutEasy;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuIR_X;
     private javax.swing.JMenuItem jMenuOpen;

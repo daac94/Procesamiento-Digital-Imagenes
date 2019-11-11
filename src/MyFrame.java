@@ -1426,6 +1426,7 @@ public class MyFrame extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "both images must be from the same size");
         }
     }//GEN-LAST:event_jMI_AddImgActionPerformed
+    
     public void Open2Images(){
         JFileChooser fc;
         JOptionPane.showMessageDialog(this, "Select the first image");

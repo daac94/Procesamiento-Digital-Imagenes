@@ -1385,7 +1385,6 @@ public class MyFrame extends javax.swing.JFrame {
                     g = (c.getGreen() < c2.getGreen()) ? c2.getGreen() : c.getGreen();
                     b = (c.getBlue() < c2.getBlue()) ? c2.getBlue() : c.getBlue();
                     resImg.setRGB(i, j, new Color(r, g, b).getRGB());
-                   
                 }
             }
             jLblImage.setIcon(new ImageIcon(resImg));
